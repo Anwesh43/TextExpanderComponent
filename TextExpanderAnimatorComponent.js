@@ -14,10 +14,7 @@ class TextExpanderAnimatorComponent extends HTMLElement {
         const context = canvas.getContext('2d')
         context.fillStyle = '#212121'
         context.fillRect(0, 0, size, size)
-        context.fillStyle = 'white'
-        context.font = context.font.replace(/\d{2}/, size/12)
-        const tw = context.measureText(this.text).width/2
-        context.fillText(this.text, size/2 - tw, size/2)
+
         this.img.src = canvas.toDataURL()
     }
     connectedCallback() {
@@ -71,6 +68,35 @@ class Animator {
             this.animated = false
             clearInterval(this.interval)
         }
+    }
+}
+class TextExpander {
+    constructor(text) {
+        this.text = text
+        this.n = 5
+        this.state = new State()
+    }
+    draw(context) {
+        context.fillStyle = 'white'
+        context.font = context.font.replace(/\d{2}/, size/12)
+        const tw = context.measureText(this.text).width/2
+        context.save()
+        context.translate(size/2 - tw, size/2)
+        context.rotate(2 * Math.PI * this.state.scales[0])
+        const scale = this.state.scales[0]
+        context.scale(scale, scale)
+        context.globalAlpha = scale
+        const y_gap = (size)/(2 * this.n)
+        for(var i = 0; i < this.n; i++) {
+            context.fillText(this.text, 0, (i - Math.floor(this.n/2) * y_gap))
+        }
+        context.restore()
+    }
+    update(stopcb) {
+        this.state.update(stopcb)
+    }
+    startUpdating(startcb) {
+        this.state.startUpdating(startcb)
     }
 }
 customElements.define('teac-comp', TextExpanderAnimatorComponent)
