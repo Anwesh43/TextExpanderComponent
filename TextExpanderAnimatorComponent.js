@@ -56,7 +56,7 @@ class State {
             }
         }
     }
-    startUpdate(startcb) {
+    startUpdating(startcb) {
         if(this.dir == 0) {
             this.dir = 1
             startcb()
@@ -93,14 +93,15 @@ class TextExpander {
         context.font = context.font.replace(/\d{2}/, size/12)
         const tw = context.measureText(this.text).width/2
         context.save()
-        context.translate(size/2 - tw, size/2)
+        context.translate(size/2, size/2)
         context.rotate(2 * Math.PI * this.state.scales[0])
         const scale = this.state.scales[0]
         context.scale(scale, scale)
         context.globalAlpha = scale
         const y_gap = (size)/(2 * this.n)
         for(var i = 0; i < this.n; i++) {
-            context.fillText(this.text, 0, (i - Math.floor(this.n/2) * y_gap))
+            console.log((i - Math.floor(this.n/2) )* y_gap)
+            context.fillText(this.text, - tw, ((i - Math.floor(this.n/2)) * y_gap) * this.state.scales[1])
         }
         context.restore()
     }
