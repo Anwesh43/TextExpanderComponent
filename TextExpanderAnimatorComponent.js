@@ -6,6 +6,8 @@ class TextExpanderAnimatorComponent extends HTMLElement {
         const shadow = this.attachShadow({mode:'open'})
         shadow.appendChild(this.img)
         this.text = this.getAttribute('text')
+        this.textExpander = new TextExpander(this.text)
+        this.animator = new Animator()
     }
     render() {
         const canvas = document.createElement('canvas')
@@ -14,11 +16,21 @@ class TextExpanderAnimatorComponent extends HTMLElement {
         const context = canvas.getContext('2d')
         context.fillStyle = '#212121'
         context.fillRect(0, 0, size, size)
-
+        this.textExpander.draw(context)
         this.img.src = canvas.toDataURL()
     }
     connectedCallback() {
         this.render()
+        this.img.onmousedown = () => {
+            this.textExpander.startUpdating(() => {
+                this.animator.start(() => {
+                    this.render()
+                    this.textExpander.update(() => {
+                        this.animator.stop()
+                    })
+                })
+            })
+        }
     }
 }
 class State {
